@@ -1,0 +1,51 @@
+local Players = game:GetService('Players')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local localPlayer = Players.LocalPlayer
+local remote = ReplicatedStorage:WaitForChild('remote')
+    :WaitForChild('firing')
+    :WaitForChild('fire')
+
+local weaponName = 'USP'
+
+while true do
+    for _, targetPlayer in ipairs(Players:GetPlayers()) do
+        if targetPlayer ~= localPlayer and targetPlayer.Character then
+            local targetPart = targetPlayer.Character:FindFirstChild('Head')
+            local hrp = localPlayer.Character
+                and localPlayer.Character:FindFirstChild('HumanoidRootPart')
+            if targetPart and hrp then
+                local args = {
+                    {
+                        muzzle_position = Vector3.new(
+                            hrp.Position.X,
+                            hrp.Position.Y + 1,
+                            hrp.Position.Z
+                        ),
+                        keep_ammo = true,
+                        is_stitched = false,
+                        weapon_name = weaponName,
+                        cframe = hrp.CFrame,
+                        actions = {
+                            falling = true,
+                            running = true,
+                            aimming = false,
+                            jumping = true,
+                            flashed = true,
+                            strength = 9e9,
+                            god_mode = true,
+                        },
+                        spread_cframe = CFrame.new(),
+                    },
+                    weaponName,
+                    {
+                        Normal = (targetPart.Position - hrp.Position).Unit,
+                        Instance = targetPart,
+                        Position = targetPart.Position,
+                    },
+                }
+                remote:FireServer(unpack(args))
+            end
+        end
+    end
+    task.wait(0.1)
+end
